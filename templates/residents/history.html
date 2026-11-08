@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+{% block title %}История — {{ resident.full_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="bi bi-clock-history"></i> История использования</h2>
+        <p class="text-muted mb-0">{{ resident.full_name }}
+            {% if resident.organization %} — {{ resident.organization }}{% endif %}
+        </p>
+    </div>
+    <a href="{{ url_for('residents.list_residents') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> К списку
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Оборудование</th>
+                    <th>Категория</th>
+                    <th>Серийный №</th>
+                    <th>Начало</th>
+                    <th>Окончание</th>
+                    <th>Цель</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in history %}
+                <tr>
+                    <td class="fw-semibold">{{ h.equipment_name or '—' }}</td>
+                    <td class="small">{{ h.category or '—' }}</td>
+                    <td><code class="small">{{ h.serial_number or '—' }}</code></td>
+                    <td class="small">{{ h.start_datetime| format_dt('%d.%m.%Y %H:%M') }}</td>
+                    <td class="small">{{ h.end_datetime| format_dt('%d.%m.%Y %H:%M') }}</td>
+                    <td class="small">{{ h.purpose or '—' }}</td>
+                    <td>
+                        {% if h.status == 'active' %}
+                            <span class="badge bg-warning text-dark">Активна</span>
+                        {% elif h.status == 'completed' %}
+                            <span class="badge bg-success">Завершена</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Отменена</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-3"></i><br>История пуста
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

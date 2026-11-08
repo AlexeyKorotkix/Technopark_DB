@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Выдать оборудование{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-clipboard-plus"></i> Выдать оборудование резиденту
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if not available_equipment %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Нет оборудования со статусом «Доступно». Сначала обновите статус существующего или добавьте новое.
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="equipment_id" class="form-label">
+                            Оборудование <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="equipment_id" name="equipment_id" required
+                                {% if not available_equipment %}disabled{% endif %}>
+                            <option value="">— Выберите оборудование —</option>
+                            {% for eq in available_equipment %}
+                                <option value="{{ eq.id }}"
+                                    {% if form_data.equipment_id == eq.id|string %}selected{% endif %}>
+                                    {{ eq.name }} ({{ eq.category or 'без категории' }}) — {{ eq.serial_number or 'б/н' }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Показано только оборудование со статусом «Доступно»</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="resident_id" class="form-label">
+                            Резидент <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="resident_id" name="resident_id" required>
+                            <option value="">— Выберите резидента —</option>
+                            {% for r in residents %}
+                                <option value="{{ r.id }}"
+                                    {% if form_data.resident_id == r.id|string %}selected{% endif %}>
+                                    {{ r.full_name }}{% if r.organization %} ({{ r.organization }}){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_datetime" class="form-label">
+                                Дата и время начала <span class="text-danger">*</span>
+                            </label>
+                            <input type="datetime-local" class="form-control" id="start_datetime"
+                                   name="start_datetime" required
+                                   value="{{ form_data.start_datetime or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_datetime" class="form-label">
+                                Планируемая дата окончания
+                            </label>
+                            <input type="datetime-local" class="form-control" id="end_datetime"
+                                   name="end_datetime"
+                                   value="{{ form_data.end_datetime or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="purpose" class="form-label">Цель использования</label>
+                        <textarea class="form-control" id="purpose" name="purpose" rows="3"
+                                  placeholder="Например: Учебная практика, курсовая работа...">{{ form_data.purpose or '' }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('usage.list_usage') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </a>
+                        <button type="submit" class="btn btn-success"
+                                {% if not available_equipment %}disabled{% endif %}>
+                            <i class="bi bi-check-circle"></i> Выдать
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

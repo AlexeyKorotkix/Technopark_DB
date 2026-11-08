@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Главная — ТехноПарк DB{% endblock %}
+
+{% block content %}
+<!-- Заголовок -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2"></i> Панель управления</h2>
+    <span class="text-muted">
+        <i class="bi bi-calendar3"></i> {{ now().strftime('%d.%m.%Y') if now is defined else '' }}
+    </span>
+</div>
+
+<!-- Карточки со статистикой -->
+<div class="row g-3 mb-4">
+    <!-- Лаборатории -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase">Лабораторий</div>
+                        <div class="h2 mb-0 fw-bold">{{ labs_count }}</div>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-building fs-3 text-primary"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('laboratories.list_laboratories') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Всего оборудования -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase">Оборудования</div>
+                        <div class="h2 mb-0 fw-bold">{{ equipment_stats.total }}</div>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-tools fs-3 text-success"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('equipment.list_equipment') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- В использовании -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase">В использовании</div>
+                        <div class="h2 mb-0 fw-bold">{{ equipment_stats.in_use or 0 }}</div>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-clipboard-check fs-3 text-warning"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('usage.list_usage') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Резиденты -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase">Резидентов</div>
+                        <div class="h2 mb-0 fw-bold">{{ residents_count }}</div>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-people fs-3 text-info"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('residents.list_residents') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подробная статистика по статусам оборудования -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Статусы оборудования</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><span class="badge bg-success">●</span> Доступно</span>
+                        <strong>{{ equipment_stats.available or 0 }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><span class="badge bg-warning text-dark">●</span> В использовании</span>
+                        <strong>{{ equipment_stats.in_use or 0 }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><span class="badge bg-danger">●</span> В ремонте</span>
+                        <strong>{{ equipment_stats.maintenance or 0 }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><span class="badge bg-secondary">●</span> Списано</span>
+                        <strong>{{ equipment_stats.decommissioned or 0 }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('equipment.add_equipment') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Добавить оборудование
+                    </a>
+                    <a href="{{ url_for('usage.issue_equipment') }}" class="btn btn-outline-success">
+                        <i class="bi bi-clipboard-plus"></i> Выдать оборудование
+                    </a>
+                    <a href="{{ url_for('residents.add_resident') }}" class="btn btn-outline-info">
+                        <i class="bi bi-person-plus"></i> Добавить резидента
+                    </a>
+                    <a href="{{ url_for('sql_console.console') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-terminal"></i> Открыть SQL-консоль
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

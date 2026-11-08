@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Отчёт по оборудованию{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="bi bi-tools"></i> Отчёт по оборудованию</h2>
+        <p class="text-muted mb-0">Найдено записей: <strong>{{ equipment|length }}</strong></p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('reports.export_equipment') }}" class="btn btn-success">
+            <i class="bi bi-download"></i> Экспорт в CSV
+        </a>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> К отчётам
+        </a>
+    </div>
+</div>
+
+<!-- Фильтры -->
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <form method="GET" class="row g-2">
+            <div class="col-md-3">
+                <select name="category" class="form-select form-select-sm">
+                    <option value="">Все категории</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.category }}" {% if filters.category == cat.category %}selected{% endif %}>
+                            {{ cat.category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">Все статусы</option>
+                    <option value="available" {% if filters.status == 'available' %}selected{% endif %}>Доступно</option>
+                    <option value="in_use" {% if filters.status == 'in_use' %}selected{% endif %}>В использовании</option>
+                    <option value="maintenance" {% if filters.status == 'maintenance' %}selected{% endif %}>В ремонте</option>
+                    <option value="decommissioned" {% if filters.status == 'decommissioned' %}selected{% endif %}>Списано</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="laboratory" class="form-control form-control-sm"
+                       placeholder="Лаборатория" value="{{ filters.laboratory }}">
+            </div>
+            <div class="col-md-3 d-flex gap-1">
+                <button type="submit" class="btn btn-sm btn-primary flex-grow-1">
+                    <i class="bi bi-funnel"></i> Применить
+                </button>
+                <a href="{{ url_for('reports.equipment_report') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Таблица -->
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Название</th>
+                    <th>Категория</th>
+                    <th>Серийный №</th>
+                    <th>Производитель</th>
+                    <th>Дата покупки</th>
+                    <th>Цена</th>
+                    <th>Статус</th>
+                    <th>Лаборатория</th>
+                    <th>Помещение</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eq in equipment %}
+                <tr>
+                    <td class="fw-semibold">{{ eq.name }}</td>
+                    <td>{{ eq.category or '—' }}</td>
+                    <td><code class="small">{{ eq.serial_number or '—' }}</code></td>
+                    <td>{{ eq.manufacturer or '—' }}</td>
+                    <td>{{ eq.purchase_date | format_dt('%d.%m.%Y') }}</td>
+                    <td>{{ "{:,.2f}".format(eq.purchase_price).replace(',', ' ') if eq.purchase_price else '—' }} ₽</td>
+                    <td>
+                        {% if eq.status == 'available' %}
+                            <span class="badge bg-success">Доступно</span>
+                        {% elif eq.status == 'in_use' %}
+                            <span class="badge bg-warning text-dark">В использовании</span>
+                        {% elif eq.status == 'maintenance' %}
+                            <span class="badge bg-danger">В ремонте</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Списано</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ eq.laboratory_name or '—' }}</td>
+                    <td>{{ eq.room_name or '—' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">Нет данных</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

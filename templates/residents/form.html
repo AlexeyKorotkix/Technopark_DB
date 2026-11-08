@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редактировать' if action == 'edit' else 'Добавить' }} резидента{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-{{ 'pencil-square' if action == 'edit' else 'person-plus' }}"></i>
+                    {{ 'Редактировать' if action == 'edit' else 'Добавить' }} резидента
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">
+                            ФИО <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="full_name" name="full_name"
+                               value="{{ resident.full_name if resident else '' }}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="{{ resident.email if resident else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                   value="{{ resident.phone if resident else '' }}"
+                                   placeholder="+7 (___) ___-__-__">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="organization" class="form-label">Организация / стартап</label>
+                            <input type="text" class="form-control" id="organization" name="organization"
+                                   value="{{ resident.organization if resident else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label">Роль</label>
+                            <select class="form-select" id="role" name="role">
+                                {% set current_role = resident.role if resident else 'student' %}
+                                <option value="student" {% if current_role == 'student' %}selected{% endif %}>Студент</option>
+                                <option value="researcher" {% if current_role == 'researcher' %}selected{% endif %}>Исследователь</option>
+                                <option value="engineer" {% if current_role == 'engineer' %}selected{% endif %}>Инженер</option>
+                                <option value="manager" {% if current_role == 'manager' %}selected{% endif %}>Менеджер</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="registration_date" class="form-label">Дата регистрации</label>
+                        <input type="date" class="form-control" id="registration_date" name="registration_date"
+                               value="{{ resident.registration_date if resident and resident.registration_date else '' }}">
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('residents.list_residents') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

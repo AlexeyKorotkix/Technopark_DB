@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редактировать' if action == 'edit' else 'Добавить' }} лабораторию{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-{{ 'pencil-square' if action == 'edit' else 'plus-circle' }}"></i>
+                    {{ 'Редактировать' if action == 'edit' else 'Добавить' }} лабораторию
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            Название <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{{ laboratory.name if laboratory else '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Местоположение</label>
+                        <input type="text" class="form-control" id="location" name="location"
+                               value="{{ laboratory.location if laboratory else '' }}"
+                               placeholder="Например: Корпус А, 3 этаж, каб. 305">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание</label>
+                        <textarea class="form-control" id="description" name="description"
+                                  rows="4" placeholder="Специализация лаборатории...">{{ laboratory.description if laboratory else '' }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('laboratories.list_laboratories') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

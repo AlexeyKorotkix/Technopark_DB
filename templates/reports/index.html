@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Отчёты{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2><i class="bi bi-bar-chart-line"></i> Отчёты</h2>
+    <p class="text-muted">Формирование и экспорт отчётов по данным системы</p>
+</div>
+
+<div class="row g-4">
+    <!-- Отчёт по оборудованию -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
+                        <i class="bi bi-tools fs-3 text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Оборудование</h5>
+                        <small class="text-muted">Полный список с фильтрацией</small>
+                    </div>
+                </div>
+                <p class="text-muted small">Всего единиц: <strong>{{ stats.equipment_total }}</strong></p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('reports.equipment_report') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-eye"></i> Просмотреть
+                    </a>
+                    <a href="{{ url_for('reports.export_equipment') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-download"></i> Экспорт в CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Отчёт по резидентам -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-info bg-opacity-10 p-3 rounded me-3">
+                        <i class="bi bi-people fs-3 text-info"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Резиденты</h5>
+                        <small class="text-muted">Список посетителей</small>
+                    </div>
+                </div>
+                <p class="text-muted small">Всего резидентов: <strong>{{ stats.residents_total }}</strong></p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('reports.residents_report') }}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-eye"></i> Просмотреть
+                    </a>
+                    <a href="{{ url_for('reports.export_residents') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-download"></i> Экспорт в CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Отчёт по использованию -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded me-3">
+                        <i class="bi bi-clipboard-check fs-3 text-warning"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Использование</h5>
+                        <small class="text-muted">Журнал выдач</small>
+                    </div>
+                </div>
+                <p class="text-muted small">
+                    Активных: <strong>{{ stats.usage_active }}</strong> · 
+                    Завершено: <strong>{{ stats.usage_completed }}</strong>
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('reports.usage_report') }}" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-eye"></i> Просмотреть
+                    </a>
+                    <a href="{{ url_for('reports.export_usage') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-download"></i> Экспорт в CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сводный отчёт -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-success bg-opacity-10 p-3 rounded me-3">
+                        <i class="bi bi-pie-chart fs-3 text-success"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Сводный отчёт</h5>
+                        <small class="text-muted">Общая статистика</small>
+                    </div>
+                </div>
+                <p class="text-muted small">Статистика по всем разделам системы</p>
+                <div class="d-grid">
+                    <a href="{{ url_for('reports.summary_report') }}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-eye"></i> Сформировать
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

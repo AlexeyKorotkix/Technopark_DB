@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редактировать' if action == 'edit' else 'Добавить' }} оборудование{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-{{ 'pencil-square' if action == 'edit' else 'plus-circle' }}"></i>
+                    {{ 'Редактировать' if action == 'edit' else 'Добавить' }} оборудование
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">
+                                Название <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   value="{{ equipment.name if equipment else '' }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Категория</label>
+                            <input type="text" class="form-control" id="category" name="category"
+                                   value="{{ equipment.category if equipment else '' }}"
+                                   placeholder="Например: 3D-принтеры, БПЛА, Роботы">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="serial_number" class="form-label">Серийный номер</label>
+                            <input type="text" class="form-control" id="serial_number" name="serial_number"
+                                   value="{{ equipment.serial_number if equipment else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="manufacturer" class="form-label">Производитель</label>
+                            <input type="text" class="form-control" id="manufacturer" name="manufacturer"
+                                   value="{{ equipment.manufacturer if equipment else '' }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="purchase_date" class="form-label">Дата покупки</label>
+                            <input type="date" class="form-control" id="purchase_date" name="purchase_date"
+                                   value="{{ equipment.purchase_date if equipment and equipment.purchase_date else '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="purchase_price" class="form-label">Цена покупки, ₽</label>
+                            <input type="number" step="0.01" class="form-control" id="purchase_price" name="purchase_price"
+                                   value="{{ equipment.purchase_price if equipment and equipment.purchase_price else '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label">Статус</label>
+                            <select class="form-select" id="status" name="status">
+                                {% set current_status = equipment.status if equipment else 'available' %}
+                                <option value="available" {% if current_status == 'available' %}selected{% endif %}>Доступно</option>
+                                <option value="in_use" {% if current_status == 'in_use' %}selected{% endif %}>В использовании</option>
+                                <option value="maintenance" {% if current_status == 'maintenance' %}selected{% endif %}>В ремонте</option>
+                                <option value="decommissioned" {% if current_status == 'decommissioned' %}selected{% endif %}>Списано</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="laboratory_id" class="form-label">Лаборатория</label>
+                            <select class="form-select" id="laboratory_id" name="laboratory_id">
+                                <option value="">— Не указана —</option>
+                                {% for lab in laboratories %}
+                                    <option value="{{ lab.id }}"
+                                        {% if equipment and equipment.laboratory_id == lab.id %}selected{% endif %}>
+                                        {{ lab.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="room_id" class="form-label">Помещение</label>
+                            <select class="form-select" id="room_id" name="room_id">
+                                <option value="">— Не указано —</option>
+                                {% for room in rooms %}
+                                    <option value="{{ room.id }}"
+                                        {% if equipment and equipment.room_id == room.id %}selected{% endif %}>
+                                        {{ room.laboratory_name }} — {{ room.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Примечания</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ equipment.notes if equipment else '' }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('equipment.list_equipment') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

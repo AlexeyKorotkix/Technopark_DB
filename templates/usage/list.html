@@ -1,0 +1,117 @@
+﻿{% extends "base.html" %}
+{% block title %}Использование оборудования{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-clipboard-check"></i> Использование оборудования</h2>
+    <a href="{{ url_for('usage.issue_equipment') }}" class="btn btn-success">
+        <i class="bi bi-clipboard-plus"></i> Выдать оборудование
+    </a>
+</div>
+
+<!-- Фильтры -->
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">Все статусы</option>
+                    <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Активные</option>
+                    <option value="completed" {% if filters.status == 'completed' %}selected{% endif %}>Завершённые</option>
+                    <option value="cancelled" {% if filters.status == 'cancelled' %}selected{% endif %}>Отменённые</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="resident_id" class="form-select form-select-sm">
+                    <option value="">Все резиденты</option>
+                    {% for r in residents %}
+                        <option value="{{ r.id }}" {% if filters.resident_id == r.id %}selected{% endif %}>
+                            {{ r.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="equipment_id" class="form-select form-select-sm">
+                    <option value="">Всё оборудование</option>
+                    {% for e in equipment %}
+                        <option value="{{ e.id }}" {% if filters.equipment_id == e.id %}selected{% endif %}>
+                            {{ e.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-1">
+                <button type="submit" class="btn btn-sm btn-primary flex-grow-1">
+                    <i class="bi bi-funnel"></i> Применить
+                </button>
+                <a href="{{ url_for('usage.list_usage') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Таблица выдач -->
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Оборудование</th>
+                    <th>Резидент</th>
+                    <th>Начало</th>
+                    <th>Окончание</th>
+                    <th>Цель</th>
+                    <th>Статус</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usage_list %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>
+                        <div class="fw-semibold">{{ u.equipment_name }}</div>
+                        <small class="text-muted">{{ u.category }} · <code>{{ u.serial_number or '—' }}</code></small>
+                    </td>
+                    <td>{{ u.resident_name or '—' }}</td>
+                    <td class="small">{{ u.start_datetime | format_dt('%d.%m.%Y %H:%M') }}</td>
+                    <td class="small">{{ u.end_datetime | format_dt('%d.%m.%Y %H:%M') }}</td>
+                    <td class="small">{{ u.purpose or '—' }}</td>
+                    <td>
+                        {% if u.status == 'active' %}
+                            <span class="badge bg-warning text-dark">Активна</span>
+                        {% elif u.status == 'completed' %}
+                            <span class="badge bg-success">Завершена</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Отменена</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if u.status == 'active' %}
+                            <form method="POST" action="{{ url_for('usage.return_equipment', id=u.id) }}" class="d-inline return-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Вернуть">
+                                    <i class="bi bi-box-arrow-in-left"></i> Вернуть
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="text-muted small">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-3"></i><br>Записей не найдено
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

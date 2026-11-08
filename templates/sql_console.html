@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}SQL-консоль{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-terminal"></i> SQL-консоль</h2>
+    <span class="badge bg-info">Только SELECT / SHOW / DESCRIBE</span>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="mb-3">
+                <label for="query" class="form-label">SQL-запрос</label>
+                <textarea class="form-control font-monospace" id="query" name="query" rows="6"
+                          placeholder="SELECT * FROM equipment LIMIT 10;"
+                          spellcheck="false">{{ query }}</textarea>
+            </div>
+
+            <!-- Быстрые примеры запросов -->
+            <div class="mb-3">
+                <small class="text-muted">Примеры:</small>
+                <div class="d-flex flex-wrap gap-1 mt-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary sql-example"
+                            data-query="SELECT * FROM equipment LIMIT 20;">
+                        Все оборудование
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary sql-example"
+                            data-query="SELECT e.name, l.name AS lab FROM equipment e LEFT JOIN laboratories l ON e.laboratory_id = l.id;">
+                        Оборудование + лаборатории
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary sql-example"
+                            data-query="SELECT status, COUNT(*) AS cnt FROM equipment GROUP BY status;">
+                        Статистика по статусам
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary sql-example"
+                            data-query="SHOW TABLES;">
+                        Список таблиц
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary sql-example"
+                            data-query="DESCRIBE equipment;">
+                        Структура equipment
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-play-fill"></i> Выполнить
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Результат выполнения запроса -->
+{% if results is not none %}
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-table"></i> Результат
+        </h5>
+        <span class="badge bg-primary">Записей: {{ results|length }}</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover table-striped mb-0">
+            <thead class="table-dark">
+                <tr>
+                    {% for col in columns %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    {% for col in columns %}
+                        <td class="small">{{ row[col] if row[col] is not none else 'NULL' }}</td>
+                    {% endfor %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="{{ columns|length }}" class="text-center text-muted py-3">
+                        Пустой результат
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Обработчик кнопок с примерами SQL-запросов
+document.querySelectorAll('.sql-example').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('query').value = btn.dataset.query;
+    });
+});
+</script>
+{% endblock %}
