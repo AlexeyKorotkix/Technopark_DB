@@ -55,3 +55,24 @@
    git clone https://github.com/AlexeyKorotkix/Technopark_DB
    cd Technopark_DB
    ```
+
+2. Создайте и активируйте виртуальное окружение:
+   ```bash
+   # Создание и вход в виртуальное окружение:
+   python -m venv venv
+   # Активация виртуального окружения:
+   venv\Scripts\activate
+
+
+3. Установите зависимости:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Инициализируйте базу данных и запустите приложение:
+   ```bash
+   python init_db.py
+   python app.py
+   ```
+
+5. Откройте в браузере: `http://127.0.0.1:5000`
