@@ -20,7 +20,7 @@
 | Компонент | Технология |
 | :--- | :--- |
 | **Backend** | Python 3.10+, Flask 3.0 |
-| **База данных** | SQLite 3 (встроенная СУБД) |
+| **База данных** | SQLite 3  |
 | **Авторизация** | Flask-Login, Werkzeug (хэширование паролей) |
 | **Защита форм** | Flask-WTF (CSRF-токены) |
 | **Frontend** | HTML5, Jinja2, Bootstrap 5, Bootstrap Icons |
