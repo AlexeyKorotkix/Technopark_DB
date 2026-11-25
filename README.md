@@ -54,5 +54,5 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <URL_РЕПОЗИТОРИЯ>
+   git clone <https://github.com/AlexeyKorotkix/Technopark_DB>
    cd TechnoPark-DB
